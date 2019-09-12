@@ -1,4 +1,4 @@
-val izumi_version = "0.8.0"
+val izumi_version = "0.9.4"
 
 addSbtPlugin("io.7mind.izumi" % "sbt-izumi-deps" % izumi_version)
 

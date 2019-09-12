@@ -1,21 +1,17 @@
-import com.github.pshirshov.izumi.sbt.deps.IzumiDeps
-import com.github.pshirshov.izumi.sbt.deps.IzumiDeps.{R, V}
+import izumi.sbt.deps.IzumiDeps
+import izumi.sbt.deps.IzumiDeps.{R, V}
 import sbt.Keys.libraryDependencies
 
-name := "distage-sample"
-
-version := "0.1"
-
-scalaVersion := "2.12.8"
-
-organization in ThisBuild := "com.github.ratoshniuk.izumi.distage"
+version in ThisBuild := "1.0-SNAPSHOT"
+scalaVersion in ThisBuild := "2.13.0"
+organization in ThisBuild := "io.7mind"
 
 enablePlugins(IzumiGitEnvironmentPlugin)
 
 val GlobalSettings = new DefaultGlobalSettingsGroup {
   override val settings: Seq[sbt.Setting[_]] = Seq(
     crossScalaVersions := Seq(
-      V.scala_212,
+      V.scala_213,
     ),
     addCompilerPlugin(R.kind_projector),
 
@@ -58,14 +54,12 @@ lazy val RoleSettings = new SettingsGroup {
 val SbtSettings = new SettingsGroup {
   override val settings: Seq[sbt.Setting[_]] = Seq(
     Seq(
-      target ~= { t => t.toPath.resolve("primary").toFile }
-      , crossScalaVersions := Seq(
-        V.scala_212
-      )
-      , libraryDependencies ++= Seq(
+      target ~= { t => t.toPath.resolve("primary").toFile },
+      crossScalaVersions := Seq(V.scala_212),
+      libraryDependencies ++= Seq(
         "org.scala-sbt" % "sbt" % sbtVersion.value
-      )
-      , sbtPlugin := true
+      ),
+      sbtPlugin := true,
     )
   ).flatten
 }
@@ -92,6 +86,18 @@ lazy val common = inLib.as.module
 
 lazy val users = inDomain.as.module
   .depends(common)
+  .settings(
+    libraryDependencies ++= Seq(
+      "org.tpolecat"      %% "doobie-core"       % "0.8.0-RC1",
+      "org.tpolecat"      %% "doobie-hikari"     % "0.8.0-RC1",
+      "org.tpolecat"      %% "doobie-postgres"   % "0.8.0-RC1",
+      "org.tpolecat"      %% "doobie-scalatest"  % "0.8.0-RC1" % Test,
+      "com.typesafe.akka" %% "akka-actor"        % "2.5.25",
+      "com.typesafe.akka" %% "akka-stream"       % "2.5.25",
+      "com.typesafe.akka" %% "akka-http"         % "10.1.9",
+      "com.typesafe.akka" %% "akka-http-testkit" % "10.1.9"    % Test,
+    )
+  )
 
 lazy val usersRole = inRoles.as.module
   .depends(users)
@@ -101,11 +107,11 @@ lazy val launcher = inApp.as.module
 
 lazy val sbtBomDistageSample = inSbt.as
   .module
-  .settings(withBuildInfo("com.github.ratoshniuk.izumi.distage.sample", "DistageSample"))
+  .settings(withBuildInfo("sample", "DistageSample"))
 
 lazy val workshop = inRoot.as.root
+  .settings(name := "distage-sample")
   .transitiveAggregate(launcher, sbtBomDistageSample)
-
 
 /*
 At this point use thse commands to setup project layout from sbt shell:
