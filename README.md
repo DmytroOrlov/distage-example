@@ -1,3 +1,7 @@
+### newer example
+
+This example project is outdated, an up-to-date sample is available at https://github.com/7mind/distage-livecode
+
 # distage-sample
 
 Install requirements:
